@@ -40,3 +40,13 @@ where lon and lat are the gridpoints and ALCS is an array containing FTLE values
 This xarray is saved to file, and can be plotted with for example
 
 plt.pcolormesh(arr.lon, arr.lat, arr.ALCS)
+
+# main.py
+
+main.py is a script which runs both the ParticleAdvector.py and LCS.py scripts at the same time. 
+
+Note that the .txt file from getting_file_names.py must exist in the working directory. 
+
+Both the output files from ParticleAdvector.py and LCS.py will be saved to a directory specified in main.py. 
+These will be named [filename].nc and [filename_LCS].nc. 
+The script can be used to for example generate a large amount of LCSs with one run, by looping over the "run" function found in the script. 
