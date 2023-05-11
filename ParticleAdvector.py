@@ -22,7 +22,7 @@ class Advection:
         Args:
             lons    [list]     :      List of two lon values, [lon1, lon2], where lon1 is in the bottom left corner of domain and lon2 is in the top right corner of domain.
             lats    [list]     :      List of two lat values, [lat1, lat2], where lat1 is in the bottom left corner of domain and lat2 is in the top right corner of domain.
-            ts      [float]    :      The integration time step. Set negative for backwards in time advection.
+            ts      [float]    :      The integration time step. Set negative for backwards in time advection. In Seconds
             sep     [int]      :      Initial separation between gridded particles in meters. 
             date    [str]      :      Date on which particles are seeded. 'ymd' without spacings.
             at_time [int]      :      Hour of the day for the particles to be initiated on.  
