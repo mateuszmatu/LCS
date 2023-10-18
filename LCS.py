@@ -27,13 +27,6 @@ def FTLE(file, outfile, DG=False, separation = None, duration=None):
     else:
         dur = ds.duration.values
 
-    """x0 = np.array(ds.lon)
-    y0 = np.array(ds.lat)
-
-    nx, ny = x0.shape[0], x0.shape[1]
-    x1 = np.reshape(np.array(ds.nlon), (nx, ny))
-    y1 = np.reshape(np.array(ds.nlat), (nx, ny))"""
-
     x0 = np.array(ds.lon)
     y0 = np.array(ds.lat)
 
