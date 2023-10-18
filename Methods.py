@@ -5,6 +5,7 @@ import re
 import pandas as pd
 import scipy as sp
 import scipy.ndimage as ndimage
+import scipy.ndimage as nd
 
 def _normalize_DataArray_no_members(ds, alcsmin, alcsmax):
     time_index = np.arange(0, len(ds.time.values))
@@ -128,8 +129,9 @@ def _set_up_DataArray2(members=24, hours=24, lcspath='/scripts/logs/ALCS_files')
         ds          [DataArray]             :   an xarray DataArray containing the LCS dataset
         
     '''
-    path = os.getcwd()
-    path_to_files = os.path.abspath(os.path.join(path, os.pardir))+lcspath
+    #path = os.getcwd()
+    #path_to_files = os.path.abspath(os.path.join(path, os.pardir))+lcspath
+    path_to_files = lcspath
     mem_dirs = os.listdir(path_to_files)
     #mem_dirs.remove('DoubleGyre')
     mem_dirs.sort(key=lambda f: int(re.sub('\D*', '', f)))
@@ -243,6 +245,34 @@ def EPSParticles():
     o.seed_elements(lon=11.4, lat=67.1, number=500000, radius=10000,
                 time=r.start_time)
     o.run(duration=timedelta(hours=2), time_step=timedelta(hours=1), outfile='eps_particles3.nc')
+
+def rotate_vectorfield(U,V,alpha):
+        '''rotate wind vectors clockwise. alpha may be a scalar or an array
+        alpha is in degrees
+        returns u,v '''
+        alpha = np.array(alpha)*sp.pi/180
+        alpha = alpha.flatten()
+        R = np.array([[np.cos(alpha), -np.sin(alpha)], [np.sin(alpha), np.cos(alpha)] ])
+        shpe = U.shape
+        origwind = np.array((U.flatten(), V.flatten()))
+        if len(R.shape)==2:
+            rotwind = dot(R, origwind) # for constant rotation angle
+        else:
+            # for rotation angle given as array with same dimensions as U and V:
+            # k-loop with rotwind(k) = dot(R(i,j,k), origwind(j,k)) (einstein summation indices)
+            rotwind = np.einsum("ijk,ik -> jk", R, origwind)  # einstein summation indices
+        Urot, Vrot = rotwind[0,:], rotwind[1,:]
+        Urot = Urot.reshape(shpe)
+        Vrot = Vrot.reshape(shpe)
+        return Urot, Vrot
+    
+def north_direction(lat):
+    '''get the north direction relative to image positive y coordinate'''
+    dlatdx = nd.filters.sobel(lat,axis=1,mode='constant',cval=sp.nan) #gradient in x-direction
+    dlatdy = nd.filters.sobel(lat,axis=0,mode='constant',cval=sp.nan)
+    ydir = lat[-1,0] -lat[0,0] # check if latitude is ascending or descending in y axis
+    # same step might have to be done with x direction.
+    return np.arctan2(dlatdx,dlatdy*np.sign(ydir) )*180/sp.pi
 
 if __name__ == '__main__':
     DGparticles()

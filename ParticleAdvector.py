@@ -36,9 +36,9 @@ class Advection:
         self.date=date
         self.at_time=at_time
 
-        self.path = f.create_directory(date)
-        self.tf = f.files_from_thredds(date, 'thredds_urls.txt')
-        self.obf = f.files_from_thredds(date, 'old_barents.txt')[0]
+        #self.tf = f.files_from_thredds(date, os.path.abspath('/home/mateuszm/LCS/LCS/thredds_urls.txt'))
+        self.tf = f.files_from_lustre(date)
+        #self.obf = f.files_from_thredds(date, os.path.abspath('/home/mateuszm/LCS/LCS/old_barents.txt'))[0]
         self.name = f.name_from_lon_lat(lons, lats)
 
     def displace_one_member(self, member, outfile=None):

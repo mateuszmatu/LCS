@@ -46,6 +46,22 @@ def files_from_thredds(date, file):
 
     return arr
 
+def files_from_lustre(date):
+    path = os.path.abspath('/lustre/storeB/project/fou/hi/barents_eps/eps')
+    files = os.listdir(path)
+    arr = []
+    for file in files:
+        if re.findall(date, file) and re.findall('eps', file):
+            arr.append(path+'/'+file)
+    arr.sort()
+
+    if len(arr) == 4 or len(arr) == 1:
+        pass
+    else:
+        raise ValueError('Something happened, list of files does not contain all members.')
+
+    return arr
+
 def correct_file(arr, member):
     '''
         Finds the correct file in the list of files from files_from_thredds(), based on which member is chosen
@@ -102,6 +118,6 @@ def name_from_lon_lat(lon,lat):
     return name
 
 if __name__ == '__main__':
-    arr = files_from_thredds('20220930', 'thredds_urls.txt')
+    arr = files_from_lustre('20230731')
 
 

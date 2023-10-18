@@ -118,6 +118,10 @@ class AdvectForwardsGrid:
         o.run(duration=timedelta(hours=self.dur), time_step=timedelta(seconds=self.ts), outfile=f'{outfile}.nc')
 
 
+test = AdvectForwardsGrid(lons=[10, 14], lats=[67.3,67.7], ts = 3600, dur=1, number=25000, sep = 500, radius=30000, date=[2023,2,1], at_time=12)
+test.advect('particle_test_grid_2')
+
+
 
 
 

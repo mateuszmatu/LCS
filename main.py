@@ -46,7 +46,7 @@ def Run(i, date, at_time=24):
         at_time [int]   :   Which hour of the day LCSs are computed for
     """
     output=f'{store_file}/member{i}/{date}_h{at_time}'
-    CreateLCSField(lons=[7,23], lats=[67,69.9], ts=-900, sep=1000, dur=2, date=date, member=i, output=output, at_time=at_time)
+    CreateLCSField(lons=[4.5,23], lats=[67,69.9], ts=-3600, sep=1000, dur=24, date=date, member=i, output=output, at_time=at_time)
 
 if __name__ == '__main__':
     """
@@ -54,19 +54,20 @@ if __name__ == '__main__':
     for i in range(24):
         os.mkdir(f'logs/ALCS_files_2h_april/member{i}')
     """
-    store_file = 'ALCS_files_2h_april'
+    store_file = 'ALCS_jun'
     import sys
     sel = int(sys.argv[1])
-    times=np.arange(0,24,2)
-
-    dates = [f'202204{d:02d}' for d in range(1,5)]
-    #dates = ['20221002', '20221003']
+    #sel = 1
+    #dates = [f'202302{d:02d}' for d in range(1,32)]
+    dates = ['20230628']
+    
     curr_date = dates[sel-1]
-    for t in times:
-        for i in range(24):
-            Run(i, curr_date, at_time=int(t))
+    #Run(0, curr_date)
+    for i in range(24):
+        Run(i, curr_date)
     
     
+    #Run(0, '20221210')
     """
     for t in times:
         for i in range(24):

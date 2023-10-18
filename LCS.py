@@ -1,12 +1,12 @@
 import numpy as np
 from cmath import inf
 import matplotlib.pyplot as plt
-from grid_advection import particle_grid_displacement as pgd
+#from grid_advection import particle_grid_displacement as pgd
 from opendrift.models.oceandrift import OceanDrift
 from opendrift.readers import reader_netCDF_CF_generic
 import xarray as xr
 
-def FTLE(file, outfile, DG=False):
+def FTLE(file, outfile, DG=False, separation = None, duration=None):
     """
         Computes LCSs using the FTLE approach using the file from ParticleAdvector.py
         The function is tailored for attracting hyperbolic LCSs. If repelling LCSs are of interest, the resulting array needs to be reversed, i.e. RLCS[::-1, ::-1].
@@ -18,8 +18,21 @@ def FTLE(file, outfile, DG=False):
         outfile.nc  [str]   :   Name of file where LCSs are saved to. 
     """
     ds = xr.open_dataset(file)
-    sep = ds.separation.values
-    dur = ds.duration.values
+    if separation is not None:
+        sep = separation
+    else:
+        sep=ds.separation.values
+    if duration is not None:
+        dur = duration
+    else:
+        dur = ds.duration.values
+
+    """x0 = np.array(ds.lon)
+    y0 = np.array(ds.lat)
+
+    nx, ny = x0.shape[0], x0.shape[1]
+    x1 = np.reshape(np.array(ds.nlon), (nx, ny))
+    y1 = np.reshape(np.array(ds.nlat), (nx, ny))"""
 
     x0 = np.array(ds.lon)
     y0 = np.array(ds.lat)
@@ -27,6 +40,7 @@ def FTLE(file, outfile, DG=False):
     nx, ny = x0.shape[0], x0.shape[1]
     x1 = np.reshape(np.array(ds.nlon), (nx, ny))
     y1 = np.reshape(np.array(ds.nlat), (nx, ny))
+
     
     largest_eig = np.zeros([nx,ny])
     for i in range(1,nx-1):
@@ -46,10 +60,11 @@ def FTLE(file, outfile, DG=False):
             np.seterr(divide = 'ignore')
             largest_eig[i,j] = np.log(np.sqrt(np.max(eig)))/dur
     largest_eig[largest_eig==-inf]=np.nan
-
-    r = reader_netCDF_CF_generic.Reader('https://thredds.met.no/thredds/dodsC/fou-hi/barents_eps_zdepth_be')
     
     if DG is False:
+        # It's important to have the correct file here for the projection
+        o = OceanDrift(loglevel=20)
+        r = reader_netCDF_CF_generic.Reader(o.test_data_folder() + '16Nov2015_NorKyst_z_surface/norkyst800_subset_16Nov2015.nc')
         x0, y0 = r.xy2lonlat(x0, y0)
     
     LCS = xr.Dataset(coords = dict(lon=(['x', 'y'], x0), lat=(['x','y'], y0)),

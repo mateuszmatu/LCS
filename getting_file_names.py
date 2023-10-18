@@ -51,7 +51,7 @@ def save_to_file(list, name_of_file):
         out.write(f'{i}\n')
 
 if __name__ == '__main__':
-    urls = urls_to_data('https://thredds.met.no/thredds/catalog/fou-hi/barents_eps_eps/catalog.html')
-    save_to_file(urls, 'thredds_urls.txt')
     urls = urls_to_data('https://thredds.met.no/thredds/catalog/barents25km_files/catalog.html')
-    save_to_file(urls, 'old_barents.txt')
+    save_to_file(urls, 'thredds_urls.txt')
+    #urls = urls_to_data('https://thredds.met.no/thredds/catalog/barents25km_files/catalog.html')
+    #save_to_file(urls, 'old_barents.txt')
