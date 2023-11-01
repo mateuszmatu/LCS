@@ -1,4 +1,4 @@
-https://github.com/mateuszmatu/LCS/blob/master/gifs/DG_animation.gif
+![](https://github.com/mateuszmatu/LCS/blob/master/gifs/DG_animation.gif)
 
 This is a repository containing scripts for computing hyperbolic LCSs utilizing the FTLE approach. 
 Files contained in the repository are:
