@@ -1,7 +1,7 @@
 
 import functions as f
 import numpy as np
-from opendrift.readers import reader_netCDF_CF_generic
+from opendrift.readers import reader_netCDF_CF_generic, reader_ROMS_native
 from opendrift.models.oceandrift import OceanDrift
 from datetime import timedelta, datetime
 import xarray as xr
@@ -107,17 +107,28 @@ class Advection:
         self.dur = dur
         self.start = start
     
-    def run(self, outfile = 'example_file', ensemble_member=None):
+    def run(self, outfile = None, ensemble_member=None):
         o = OceanDrift(loglevel=20)
-        r = reader_netCDF_CF_generic.Reader(self.file, ensemble_member=ensemble_member)
+        try:
+            r = reader_netCDF_CF_generic.Reader(self.file, ensemble_member=ensemble_member)
+        except:
+            pass
+            #r = reader_ROMS_native.Reader(self.file)
         o.set_config('drift:advection_scheme', 'runge-kutta4')
         o.set_config('drift:vertical_mixing', False)
         o.add_reader(r)
 
         x,y = r.lonlat2xy(self.lons, self.lats)
-        c1 = np.arange(x[0], x[1], self.sep)
-        c2 = np.arange(y[0], y[1], self.sep)
+        if x[1]>x[0]:
+            c1 = np.arange(x[0], x[1], self.sep)
+        else:
+            c1 = np.arange(x[0], x[1], -self.sep)
+        if y[1]>y[0]:
+            c2 = np.arange(y[0], y[1], self.sep)
+        else:
+            c2 = np.arange(y[0], y[1], -self.sep)
         X, Y = np.meshgrid(c1, c2)
+  
         lons, lats = r.xy2lonlat(X.flatten(), Y.flatten())
 
         o.seed_elements(lons.ravel(), lats.ravel(), time=r.start_time+self.start)
@@ -125,10 +136,13 @@ class Advection:
         lons, lats = np.reshape(lons, (X.shape[0], X.shape[1])), np.reshape(lats, (X.shape[0], X.shape[1]))
         f_x1, f_y1 = r.lonlat2xy(o.history['lon'].T[-1], o.history['lat'].T[-1])
 
+
         ds = xr.Dataset(coords=dict(lon = (['x', 'y'], X),
                         lat = (['x','y'], Y)),
                 data_vars=dict(separation=self.sep, duration=self.dur, nlon=f_x1, nlat=f_y1))
-        ds.to_netcdf(f'{outfile}.nc')
+        
+        if outfile is not None:
+            ds.to_netcdf(f'{outfile}.nc')
 
         return ds
         

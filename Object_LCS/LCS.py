@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 from opendrift.models.oceandrift import OceanDrift
 from opendrift.readers import reader_netCDF_CF_generic
 import xarray as xr
+import os
 
-def FTLE(DataArray, outfile, separation = None, duration=None, model=True, example_model_file = '/lustre/storeB/project/fou/hi/barents_eps/eps/barents_mean_20231018T06Z.nc'):
+def FTLE(DataArray, outfile=None, separation = None, duration=None, model=True, example_model_file = '/lustre/storeB/project/fou/hi/barents_eps/eps/barents_mean_20231018T06Z.nc'):
     """
         Computes LCSs using the FTLE approach using the file from ParticleAdvector.py
         The function is tailored for attracting hyperbolic LCSs. If repelling LCSs are of interest, the resulting array needs to be reversed, i.e. RLCS[::-1, ::-1].
@@ -59,7 +60,8 @@ def FTLE(DataArray, outfile, separation = None, duration=None, model=True, examp
     LCS = xr.Dataset(coords = dict(lon=(['x', 'y'], x0), lat=(['x','y'], y0)),
                     data_vars = dict(ALCS=(['x', 'y'], largest_eig[::-1,::-1])))
 
-    LCS.to_netcdf(f'{outfile}.nc')
+    if outfile is not None:
+        LCS.to_netcdf(f'{outfile}.nc')
 
     return LCS
 
@@ -67,22 +69,26 @@ def FTLE(DataArray, outfile, separation = None, duration=None, model=True, examp
 if __name__ == '__main__':
     from ParticleAdvector import Advection
     from datetime import datetime, timedelta
-    file = '/lustre/storeB/project/fou/hi/barents_eps/eps/barents_eps_20230618T00Z.nc'
-    file = 'https://thredds.met.no/thredds/dodsC/fou-hi/norkyst800m-1h/NorKyst-800m_ZDEPTHS_his.an.2023040700.nc'
-    ds = xr.open_dataset(file)
+    #ile = '/lustre/storeB/project/fou/hi/barents_eps/eps/barents_eps_20230618T00Z.nc'
+    #file = '/lustre/storeB/project/fou/hi/new_norkyst/his/ocean_his.an.20190526.nc'
+    file = 'https://thredds.met.no/thredds/dodsC/fou-hi/norkyst800m-1h/NorKyst-800m_ZDEPTHS_his.an.2023092100.nc'
+    ds = xr.open_dataset(file).isel(depth=0)
+    
     lons=[4.5,23]
     lats=[67,69.9]
-    lons = []
     ts=-3600
-    sep=1000
+    sep=2000
     dur=12
     start = datetime(2023,6,19)
-    start = timedelta(hours=24)
+    # time must be smaller than file time dimension
+    start = timedelta(hours=23)
     t = Advection(file, lons, lats, ts, sep, dur, start)
-    parts = t.run()
-    LCS = FTLE(parts, 'example', example_model_file=file)
-    LCS = xr.open_dataset('example.nc')
+    parts = t.run()#(ensemble_member=0)
+    LCS = FTLE(parts, example_model_file=file)
 
-    plt.pcolormesh(LCS.lon, LCS.lat, LCS.ALCS, vmin=0, vmax=0.08)
+    plt.pcolormesh(LCS.lon, LCS.lat, LCS.ALCS)
+    #plt.scatter(parts.nlon, parts.nlat)
+    plt.colorbar()
 
     plt.show()
+    
