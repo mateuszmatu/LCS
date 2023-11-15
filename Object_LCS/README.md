@@ -2,6 +2,7 @@
 # Todo
 - [ ] Test on more data to check for robustness
 - [ ] Implement 3D LCSs
+- [ ] Implement a method for detecting "true" LCSs, following Farazmand and Haller 2012
 
 # Important: This is still work in progress
 # Any feedback or suggestions are appreciated
