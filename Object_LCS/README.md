@@ -26,5 +26,11 @@ parts = t.run()
 [file] is the name of the file contaning the velocity field, [lons] is a list containing min and max longitudes, [lats] is a list containing min and max latitudes, [ts] is the time step for the integration in seconds, [sep] is the initial separation between particles in meters, [dur] is the simulation duration in hours and [start] is a datetime object containing the simulation start time. 
 If the velocity fields come from an ensemble model, the specific ensemble member can be specified with ```t.run(ensemble_member=....)```.
 
+Once the particles have been advected, they can be provided to the ```FTLE``` function in ```LCS.py```.
+```
+LCS = FTLE(parts, example_model_file)
+```
+Where [example_model_file] 
+
 
 
