@@ -1,7 +1,8 @@
 ![](https://github.com/mateuszmatu/LCS/blob/master/gifs/DG_animation.gif)
 # Todo
-Test on more data to check for robustness
-Implement 3D LCSs
+Markup:
+* Test on more data to check for robustness
+* Implement 3D LCSs
 
 # Important: This is still work in progress
 # Any feedback or suggestions are appreciated
