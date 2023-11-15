@@ -17,5 +17,10 @@ pip install [package name]
 
 # Using the software
 
-The goal of this software is for it to be simple to use, and yet general. Particles are first advected using the ```Advection``` class.
+The goal of this software is for it to be simple to use, and yet general. Particles are initiated by the ```Advection``` class found in ```ParticleAdvector.py```, and advected with ```Advection.run()```. This returns a DataArray containing the initial and final particle positions.  
+Example:
+```
+t = Advection(file, lons, lats, ts, sep, dur, start)
+parts = t.run()#(ensemble_member=0)
+```
 
