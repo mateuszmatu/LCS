@@ -21,6 +21,10 @@ The goal of this software is for it to be simple to use, and yet general. Partic
 Example:
 ```
 t = Advection(file, lons, lats, ts, sep, dur, start)
-parts = t.run()#(ensemble_member=0)
+parts = t.run()
 ```
+[file] is the name of the file contaning the velocity field, [lons] is a list containing min and max longitudes, [lats] is a list containing min and max latitudes, [ts] is the time step for the integration in seconds, [sep] is the initial separation between particles in meters, [dur] is the simulation duration in hours and [start] is a datetime object containing the simulation start time. 
+If the velocity fields come from an ensemble model, the specific ensemble member can be specified with ```t.run(ensemble_member=....)```.
+
+
 
