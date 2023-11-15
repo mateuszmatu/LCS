@@ -30,7 +30,14 @@ Once the particles have been advected, they can be provided to the ```FTLE``` fu
 ```
 LCS = FTLE(parts, example_model_file)
 ```
-Where [example_model_file] 
+Where [example_model_file] is again the name of the file containing the velocity fields. It is important to provide this, as the software conducts a coordinate transformation based on the datasets projection. 
+
+# Final note
+The sign of [ts] determines whether attracting (negative ts) or repelling (positive ts) LCSs are computed. Note that the software by default assumes that attracting LCSs are computed. For repelling LCSs, the outputted LCSs have to be flipped
+```
+LCS = LCS[::-1,::-1]
+```
+The reason for this is still unknown.
 
 
 
