@@ -42,6 +42,3 @@ The sign of [ts] determines whether attracting (negative ts) or repelling (posit
 LCS = LCS[::-1,::-1]
 ```
 The reason for this is still unknown.
-
-
-
