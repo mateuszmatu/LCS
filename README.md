@@ -1,16 +1,15 @@
 ![](https://github.com/mateuszmatu/LCS/blob/master/gifs/DG_animation.gif)
+# Todo
+- [ ] Test on more data to check for robustness
+- [ ] Implement 3D LCSs
+- [ ] Implement a method for detecting "true" LCSs, following Farazmand and Haller 2012
 
-This is a repository containing scripts for computing hyperbolic LCSs utilizing the FTLE approach. 
-Files contained in the repository are:
-* functions.py
-* getting_file_names.py
-* LCS.py
-* main.py
-* main.sh
-* Methods.py
-* ParticleAdvector.py
-* ParticleAdvectorAggregated.py
-* simple_advection.py
+# Important: This is still work in progress
+# Any feedback or suggestions are appreciated
+
+This is a repository containing more general scripts for computing hyperbolic LCSs, utilizing the FTLE approach.
+The goal of the files in this folder is to make the scripts as robust as possible, so that they can be used with any model in any region. 
+These scripts compute LCSs in the ocean, but should work for 2D atmosphere as well (not tested).
 
 # Dependencies
 
@@ -22,33 +21,27 @@ pip install [package name]
 
 # Using the software
 
-To use the software, first run 
+The goal of this software is for it to be simple to use, and yet general. Particles are initiated by the ```Advection``` class found in ```ParticleAdvector.py```, and advected with ```Advection.run()```. This returns a DataArray containing the initial and final particle positions.  
+Example:
 ```
-python getting_file_names.py
+t = Advection(file, lons, lats, ts, sep, dur, start)
+parts = t.run()
 ```
-This generates a .txt file containing all links to the Barents-2.5 EPS files found in https://thredds.met.no/thredds/catalog/fou-hi/barents_eps_eps/catalog.html.
+[file] is the name of the file contaning the velocity field, [lons] is a list containing min and max longitudes, [lats] is a list containing min and max latitudes, [ts] is the time step for the integration in seconds, [sep] is the initial separation between particles in meters, [dur] is the simulation duration in hours and [start] is a datetime object containing the simulation start time. 
+If the velocity fields come from an ensemble model, the specific ensemble member can be specified with ```t.run(ensemble_member=....)```.
 
-
-Particles can then be seeded in the Barents-2.5 EPS velocity field with ParticleAdvector.py.
-The domain, gridsize, initial particle separation, ensemble member and date can be chosen here. 
-
-A function for advecting particles in the double-gyre system is also contained in ParticleAdvector.py.
-
-ParticleAdvector.py will save the initial and final positions of particles to a specified file. This file can then be used as input for the LCS.py script, which computes attracting hyperbolic LCSs. The FTLE values approximating LCSs are saved to an xarray dataset, with dimensions
+Once the particles have been advected, they can be provided to the ```FTLE``` function in ```LCS.py```.
 ```
-[lon, lat, ALCS]
+LCS = FTLE(parts, example_model_file)
 ```
-where lon and lat are the gridpoints and ALCS is an array containing FTLE values. Note that the method is specifically tailored for attracting hyperbolic LCSs, but can still be used for repelling LCSs. However, the dimension name will still be ALCS, and not RLCS, and the array has to be reversed, so that arr[ALCS][::-1,::-1] yields repelling LCSs (given that particles have been integrated forwards in time).
-This xarray is saved to file, and can be plotted with for example
+Where [example_model_file] is again the name of the file containing the velocity fields. It is important to provide this, as the software conducts a coordinate transformation based on the datasets projection. 
 
-plt.pcolormesh(arr.lon, arr.lat, arr.ALCS)
+# Final note
+The sign of [ts] determines whether attracting (negative ts) or repelling (positive ts) LCSs are computed. Note that the software by default assumes that attracting LCSs are computed. For repelling LCSs, the outputted LCSs have to be flipped
+```
+LCS = LCS[::-1,::-1]
+```
+The reason for this is still unknown.
 
-# main.py
 
-main.py is a script which runs both the ParticleAdvector.py and LCS.py scripts at the same time. 
 
-Note that the .txt file from getting_file_names.py must exist in the working directory. 
-
-Both the output files from ParticleAdvector.py and LCS.py will be saved to a directory specified in main.py. 
-These will be named [filename].nc and [filename_LCS].nc. 
-The script can be used to for example generate a large amount of LCSs with one run, by looping over the "run" function found in the script. 

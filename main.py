@@ -1,8 +1,9 @@
-from ParticleAdvector import Advection
+from ParticleAdvector import AdvectionBarentsEPS
 from LCS import FTLE
 import xarray as xr
 import numpy as np
 from joblib import Parallel, delayed
+import os
 
 def _mkdir(member):
     """
@@ -11,7 +12,6 @@ def _mkdir(member):
     Args:
         member  [int]   :   the ensemble member
     """
-    import os
     if not os.path.exists(store_file):
         os.mkdir(store_file)
     if not os.path.exists(f'{store_file}/member{member}'):
@@ -33,9 +33,10 @@ def CreateLCSField(lons, lats, ts, sep, dur, date, member, output, at_time=0):
         at_time [int]       :   Which hour of the day LCSs are computed for
     """
     _mkdir(member)
-    advector = Advection(lons, lats, ts, sep, dur, date, at_time)
+    advector = AdvectionBarentsEPS(lons, lats, ts, sep, dur, date, at_time)
     outfile = advector.displace_one_member(member, output)
     LCS = xr.open_dataset(FTLE(f'{output}.nc', f'{output}_LCS'))
+    os.remove(f'{output}.nc')
 
 def Run(i, date, at_time=24):
     """

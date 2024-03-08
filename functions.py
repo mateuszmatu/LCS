@@ -3,21 +3,6 @@ import re
 from datetime import datetime
 from datetime import timedelta
 
-def create_directory(date):
-    '''
-        Creates a directory under flow_maps/date/, where date is an argument
-    Args:
-        date    [str]   :   the name of the directory, usually a date
-    Returns:
-        path    [str]   :   path to directory
-    '''
-    if not os.path.exists('flow_maps'):
-        os.mkdir('flow_maps')
-    path = f'flow_maps/{date}'
-    if not os.path.exists(path):
-        os.mkdir(path)
-    return path
-
 def files_from_thredds(date, file):
     '''
         Find the threeds files from {file}.txt from the previous day of the specified date.
@@ -39,7 +24,7 @@ def files_from_thredds(date, file):
                 line = re.sub('\n', '', line)
                 arr.append(line)
     arr.sort()
-    if len(arr) == 4 or len(arr) == 1:
+    if len(arr) == 4:
         pass
     else:
         raise ValueError('Something happened, list of files does not contain all members.')
@@ -55,7 +40,7 @@ def files_from_lustre(date):
             arr.append(path+'/'+file)
     arr.sort()
 
-    if len(arr) == 4 or len(arr) == 1:
+    if len(arr) == 4:
         pass
     else:
         raise ValueError('Something happened, list of files does not contain all members.')
